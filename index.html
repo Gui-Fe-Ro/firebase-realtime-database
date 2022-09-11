@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro</title> 
+
+    <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+</head>
+
+<style>
+
+    body{
+        background-color: #303030;
+    }
+
+    form{
+        background-color:white;
+        max-width: 500px;
+        width: 70%;
+        padding: 20px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+
+        border-radius: 5px;
+    }
+
+    form h3{
+        text-align: center;
+        color: #303030;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    form input[type=text], form input[type=password]{
+        width: 100%;
+        height: 45px;
+        border: 1px solid #ccc;
+        /* padding-left: 10px; */
+        margin: 10px 0;
+    }
+
+    form input[type=submit]{
+        width: 100%;
+        height: 30px;
+        cursor: pointer;
+        background-color: #303030;
+        color: white;
+        border: 0;
+        border-radius: 20px;
+        transition: 1s;
+    }
+
+    form input[type=submit]:hover{
+        background-color: gray;
+    }
+
+    form div{
+        width: 100%;
+        height: 30px;
+        padding-top: 10px;
+        text-align: center;
+        background-color: red;
+        color: white;
+        border-radius: 5px;
+    }
+
+    table{
+        max-width: 500px;
+        text-align: center;
+    }
+    th{
+        width: 150px;
+    }
+
+    a.deleteButton{
+        color: red;
+    }
+
+</style>
+
+<body>
+    <script src="https://unpkg.com/boxicons@2.1.2/dist/boxicons.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-database.js"></script>
+    <script src="js/firebase.js"></script>
+
+    <form method="post">
+        <h3>Cadastro</h3>
+        <input id="nome" type="text" name="nome" placeholder=" Nome" />
+        <input id="sobrenome" type="text" name="sobrenome" placeholder=" Sobrenome" />
+        <input class="submit" type="submit" name="acao" value="Enviar" />
+
+        <h3>Tabela</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Sobrenome</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+        
+    </form>
+
+
+    <script>
+        
+        $(document).ready(function(){
+            const dbRef = firebase.database().ref();
+            const ListaCadastro = dbRef.child("Cadastro");
+
+            ListaCadastro.on('child_added', (snapshot) => {
+                const newPost = snapshot.val();
+                $("tbody").append(`
+                    <tr data-id = "${snapshot.key}">
+                        <td>${newPost.Nome}</td>
+                        <td>${newPost.Sobrenome}</td>
+                        <td>
+                            <!-- <a href = "" class = "editButton">Editar</a> -->
+                            
+                            <a href = "" class = "deleteButton" ><i class='bx bxs-trash'></i></a>
+                        </td>
+                    </tr>
+                `)
+            });            
+
+
+            $(".submit").on("click",() => {
+                var Nome = $("#nome").val();
+                var Sobrenome = $("#sobrenome").val();
+                if(Nome.length == 0 || Sobrenome.length == 0){
+                    alert("Nome ou sobrenome está vazio");return ;
+                }else{
+                    var newData = {
+                        "Nome" : Nome,
+                        "Sobrenome" : Sobrenome
+                    }
+                    ListaCadastro.push(newData);
+                }
+            })
+
+
+            $(document).on("click",".deleteButton",function(){
+                var delete_key = $(this).parent().parent().data("id");
+                ListaCadastro.child(delete_key).remove();
+                $(this).parent().parent().hide();
+            })
+        })
+        
+    </script>
+    
+</body>
+</html>
