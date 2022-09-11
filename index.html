@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Cadastro</title> 
 
+    <!-- Adicionando link para que possamos usar ícones na aplicação -->
     <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
 </head>
 
@@ -80,12 +81,20 @@
 </style>
 
 <body>
+    <!-- Link para boxicons, que é nossa fonte dos ícones -->
     <script src="https://unpkg.com/boxicons@2.1.2/dist/boxicons.js"></script>
+
+    <!-- Link para usar o JQuery -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Links para usar a aplicação e o database do firebase -->
     <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-database.js"></script>
+
+    <!-- Link onde se encontra as configurações que devem ser feitas para que possamos usar o firebase -->
     <script src="js/firebase.js"></script>
 
+    <!-- Criação do forms -->
     <form method="post">
         <h3>Cadastro</h3>
         <input id="nome" type="text" name="nome" placeholder=" Nome" />
@@ -110,11 +119,16 @@
 
 
     <script>
-        
+        // Primeiro vamos dar um document.ready para que tudo funcione enquanto minha aplicação estiver ativa
         $(document).ready(function(){
+
+            // Primeiro vamos puxar a referência do database
             const dbRef = firebase.database().ref();
+
+            // Depois vou definir uma const com um nó filho e o nome dele (caso não exista, ele criará o nó)
             const ListaCadastro = dbRef.child("Cadastro");
 
+            // Essa função, diz que enquanto ListaCadastro estiver on, ele vai puxar e construir a tabela com as informações do banco
             ListaCadastro.on('child_added', (snapshot) => {
                 const newPost = snapshot.val();
                 $("tbody").append(`
@@ -130,7 +144,7 @@
                 `)
             });            
 
-
+            // Essa função diz que quando eu clicar em enviar, os campos nome e sobrenome vão ser puxados e caso estejam certos ele vai enviar pro banco com push uma variável no esquema chave: valor
             $(".submit").on("click",() => {
                 var Nome = $("#nome").val();
                 var Sobrenome = $("#sobrenome").val();
@@ -145,7 +159,7 @@
                 }
             })
 
-
+            //Nesse casso, quando for clicado no botão delete, a aplicação vai usar o próprio nome da chave para enviar pro banco e deletar a chave criada
             $(document).on("click",".deleteButton",function(){
                 var delete_key = $(this).parent().parent().data("id");
                 ListaCadastro.child(delete_key).remove();
